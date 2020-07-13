@@ -68,7 +68,7 @@
 | max | boolean | yes | - |
 | fromValueOnChange | callback | yes | - |
 | toValueOnChange | callback | yes | - |
-| styleSize | string ( 'small' \| 'medium' \| 'large )  | no | 'medium' |
+| styleSize | string ( 'small' \| 'medium' \| 'large' )  | no | 'medium' |
 | fromKnobColor | string (color) | no | '#00a2ff' |
 | toKnobColor | string (color) | no | '#00a2ff' |
 | inRangeBarColor | string (color) | no | 'rgb(100,100,100)' |
