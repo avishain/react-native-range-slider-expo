@@ -2,18 +2,16 @@
 #### Customizable range slider for react native apps
 
 <br/><br/>
-
 ## Getting started
 `npm i react-native-range-slider-expo`
-<br/>
+
+<br/><br/>
+## Usage
+#### Example
 <div>
   <img src="./image.png" style="height:100%;width:100%"/>
 </div>
 
-<br/><br/>
-
-## Usage
-#### Example
 ```javascript
   import Slider from 'react-native-range-slider-expo';
 ```
@@ -61,7 +59,7 @@
       </View>
 ```
 
-<br/><br/>
+<br/>
 
 ## API
 | Property | Type | Required | Default |
