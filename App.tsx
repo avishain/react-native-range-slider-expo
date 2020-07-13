@@ -10,9 +10,9 @@ const LARGE_SIZE = 44;
 type SliderProps = {
     min: number,
     max: number,
-    step?: number,
     fromValueOnChange: (value: number) => void,
     toValueOnChange: (value: number) => void,
+    step?: number,
     styleSize?: 'small' | 'medium' | 'large',
     fromKnobColor?: string,
     toKnobColor?: string,
