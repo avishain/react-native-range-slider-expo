@@ -4,6 +4,8 @@
 ## Getting started
 `npm i react-native-range-slider-expo`
 
+<img src="./example.png" style="height:100%;width:100%"/>
+
 ## Usage
 #### Example
 ```javascript
@@ -52,9 +54,7 @@
           />
       </View>
 ```
-<div style="height:400px;width:200px">
-  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1594658429/react-native-range-slider-expo_image_lgqmu2.png"/>
-</div>
+
 ## API
 | Property | Type | Required | 
 | :---     |:----:|  :-----: | 
@@ -62,16 +62,16 @@
 | max | boolean | yes |
 | fromValueOnChange | callback | yes |
 | toValueOnChange | callback | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-| min | boolean | yes |
-
-
+| styleSize | string ( 'small' \| 'medium' \| 'large )  | no |
+| fromKnobColor | string (color) | no |
+| toKnobColor | string (color) | no |
+| inRangeBarColor | string (color) | no |
+| outOfRangeBarColor | string (color) | no |
+| valueLabelsTextColor | string (color) | no |
+| valueLabelsBackgroundColor | string (color) | no |
+| rangeLabelsTextColor | string (color) | no |
+| showRangeLabels | boolean | no |
+| showValueLabels | boolean | no |
 
 ## License
 This project is licensed under the MIT License
