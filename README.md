@@ -1,5 +1,5 @@
 # react-native-range-slider-expo
-##### Customizable range slider for react native apps
+#### Customizable range slider for react native apps
 <br/><br/>
 ## Getting started
 `npm i react-native-range-slider-expo`
@@ -58,10 +58,10 @@
 ## API
 | Property | Type | Required | Default |
 | :---     |:----:|  :-----: | :-----: | 
-| min | boolean | yes | |
-| max | boolean | yes | |
-| fromValueOnChange | callback | yes | |
-| toValueOnChange | callback | yes | |
+| min | boolean | yes | - |
+| max | boolean | yes | - |
+| fromValueOnChange | callback | yes | - |
+| toValueOnChange | callback | yes | - |
 | styleSize | string ( 'small' \| 'medium' \| 'large )  | no | 'medium' |
 | fromKnobColor | string (color) | no | '#00a2ff' |
 | toKnobColor | string (color) | no | '#00a2ff' |
