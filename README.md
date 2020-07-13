@@ -1,11 +1,17 @@
 # react-native-range-slider-expo
 #### Customizable range slider for react native apps
+
 <br/><br/>
+
 ## Getting started
 `npm i react-native-range-slider-expo`
+<br/>
+<div>
+  <img src="./image.png" style="height:100%;width:100%"/>
+</div>
+
 <br/><br/>
-<img src="./example.png" style="height:100%;width:100%"/>
-<br/><br/>
+
 ## Usage
 #### Example
 ```javascript
@@ -54,7 +60,9 @@
           />
       </View>
 ```
+
 <br/><br/>
+
 ## API
 | Property | Type | Required | Default |
 | :---     |:----:|  :-----: | :-----: | 
@@ -74,9 +82,12 @@
 | showValueLabels | boolean | no | true |
 
 <br/><br/>
+
 ## License
 This project is licensed under the MIT License
+
 <br/><br/>
+
 ## Todo
    - [ ] Change value press on bar (on the out of range parts)
    - [ ] Knob is pressed indication
