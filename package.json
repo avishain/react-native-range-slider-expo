@@ -4,7 +4,7 @@
     "description": "range slider",
     "license": "MIT",
     "homepage": "https://github.com/D10S60948/react-native-range-slider-expo#readme",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "scripts": {
         "start": "expo start",
         "android": "expo start --android",
