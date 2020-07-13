@@ -73,5 +73,14 @@
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
 
+
 ## License
 This project is licensed under the MIT License
+
+
+## Todo
+   - [ ] Change value press on bar (on the out of range parts)
+   - [ ] Knob is pressed indication
+   - [ ] Textual values
+   - [ ] contant selected values appearance
+   - [ ] Beautify styling
