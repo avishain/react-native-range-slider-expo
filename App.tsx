@@ -2,11 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
-import { SliderProps } from './types';
+// import { SliderProps } from './types';
 
 const SMALL_SIZE = 24;
 const MEDIUM_SIZE = 34;
 const LARGE_SIZE = 44;
+
+interface SliderProps {
+    min: number,
+    max: number,
+    fromValueOnChange: (value: number) => void,
+    toValueOnChange: (value: number) => void,
+    step?: number,
+    styleSize?: 'small' | 'medium' | 'large',
+    fromKnobColor?: string,
+    toKnobColor?: string,
+    inRangeBarColor?: string,
+    outOfRangeBarColor?: string,
+    valueLabelsTextColor?: string,
+    valueLabelsBackgroundColor?: string,
+    rangeLabelsTextColor?: string,
+    showRangeLabels?: boolean,
+    showValueLabels?: boolean
+}
 
 export default ({
     min, max, fromValueOnChange, toValueOnChange,
@@ -87,7 +105,7 @@ export default ({
             setFromValueOffset(newOffset);
             translateXfromValue.setValue(newOffset);
             leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth);
-            scaleTo(fromValueScale, 0);
+            scaleTo(fromValueScale, 0.01);
             fromValueOnChange(Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
@@ -122,7 +140,7 @@ export default ({
             setToValueOffset(newOffset);
             translateXtoValue.setValue(newOffset);
             rightBarScaleX.setValue(1 - ((newOffset + (knobSize / 2)) / sliderWidth));
-            scaleTo(toValueScale, 0);
+            scaleTo(toValueScale, 0.01);
             toValueOnChange(Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
