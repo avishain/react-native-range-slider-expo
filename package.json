@@ -5,14 +5,13 @@
     "license": "MIT",
     "homepage": "https://github.com/D10S60948/react-native-range-slider-expo#readme",
     "version": "1.0.6",
-    "types": "./App.d.ts",
     "scripts": {
         "start": "expo start",
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web",
         "eject": "expo eject",
-        "build": "npx tsc -p tsconfig.json"
+        "build": "tsc -d --declarationDir dist/lib"
     },
     "dependencies": {
         "expo": "~38.0.8",
