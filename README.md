@@ -64,10 +64,11 @@
 ## API
 | Property | Type | Required | Default |
 | :---     |:----:|  :-----: | :-----: | 
-| min | boolean | yes | - |
-| max | boolean | yes | - |
+| min | number | yes | - |
+| max | number | yes | - |
 | fromValueOnChange | callback | yes | - |
 | toValueOnChange | callback | yes | - |
+| step | number | no | 1 |
 | styleSize | string ( 'small' \| 'medium' \| 'large' )  | no | 'medium' |
 | fromKnobColor | string (color) | no | '#00a2ff' |
 | toKnobColor | string (color) | no | '#00a2ff' |
@@ -87,8 +88,8 @@ This project is licensed under the MIT License
 <br/><br/>
 
 ## Todo
-   - [ ] Change value press on bar (on the out of range parts)
-   - [ ] Knob is pressed indication
-   - [ ] Textual values
-   - [ ] contant selected values appearance
+   - [ ] Add textual values
+   - [ ] Add prefix/suffix to numeric values
    - [ ] Beautify styling
+   <!-- - [ ] Knob is pressed indication -->
+   <!-- - [ ] Change value press on bar (on the out of range parts) -->
