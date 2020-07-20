@@ -1,5 +1,8 @@
 # react-native-range-slider-expo
 #### Customizable range slider for react native apps
+<p>Please note that slider is currently not working when is inside scrollable component (such as "ScrollView", "FlatList", etc.).</p>
+
+[Feel free to write me comments, imporvements suggestions, requests, etc..](mailto:d10s.avinu@gmail.com)
 
 <br/><br/>
 ## Getting started
