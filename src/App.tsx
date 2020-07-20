@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
-// import { SliderProps } from './types';
 
 const SMALL_SIZE = 24;
 const MEDIUM_SIZE = 34;
@@ -42,6 +41,7 @@ export default ({
 }: SliderProps) => {
 
     // settings
+    const [wasInitialized, setWasInitialized] = useState(false);
     const [numberOfSteps, setNumberOfSteps] = useState(0);
     const [knobSize, setknobSize] = useState(0);
     const [fontSize, setFontSize] = useState(15);
@@ -55,11 +55,11 @@ export default ({
 
     // animation values
     const [translateXfromValue] = useState(new Animated.Value(0));
-    const [fromValueScale] = useState(new Animated.Value(0));
     const [translateXtoValue] = useState(new Animated.Value(0));
-    const [toValueScale] = useState(new Animated.Value(0));
-    const [rightBarScaleX] = useState(new Animated.Value(0));
-    const [leftBarScaleX] = useState(new Animated.Value(0));
+    const [fromValueScale] = useState(new Animated.Value(0.01));
+    const [toValueScale] = useState(new Animated.Value(0.01));
+    const [rightBarScaleX] = useState(new Animated.Value(0.01));
+    const [leftBarScaleX] = useState(new Animated.Value(0.01));
 
     // refs
     const toValueTextRef = React.createRef<TextInput>();
@@ -85,7 +85,7 @@ export default ({
             if (fromValueTextRef != null) {
                 fromValueTextRef.current?.setNativeProps({ text: (Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
             }
-            leftBarScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth);
+            leftBarScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth + 0.01);
         }
     }
     const onHandlerStateChangeFromValue = (event: PanGestureHandlerGestureEvent) => {
@@ -104,9 +104,9 @@ export default ({
             }
             setFromValueOffset(newOffset);
             translateXfromValue.setValue(newOffset);
-            leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth);
+            leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
             scaleTo(fromValueScale, 0.01);
-            fromValueOnChange(Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+            fromValueOnChange(Math.floor(((newOffset + (knobSize * 3 / 4)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ export default ({
                 const numericValue: number = Math.ceil(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
                 toValueTextRef.current?.setNativeProps({ text: numericValue.toString() });
             }
-            rightBarScaleX.setValue(1 - ((totalOffset + (knobSize / 2)) / sliderWidth));
+            rightBarScaleX.setValue(1.01 - ((totalOffset + (knobSize / 2)) / sliderWidth));
         }
     }
     const onHandlerStateChangeToValue = (event: PanGestureHandlerGestureEvent) => {
@@ -139,9 +139,9 @@ export default ({
             }
             setToValueOffset(newOffset);
             translateXtoValue.setValue(newOffset);
-            rightBarScaleX.setValue(1 - ((newOffset + (knobSize / 2)) / sliderWidth));
+            rightBarScaleX.setValue(1.01 - ((newOffset + (knobSize / 2)) / sliderWidth));
             scaleTo(toValueScale, 0.01);
-            toValueOnChange(Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+            toValueOnChange(Math.ceil(((newOffset + (knobSize / 4)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -163,11 +163,14 @@ export default ({
 
     // setting bar width ------------------------------------------------------------------------------
     const onLayout = (event: LayoutChangeEvent) => {
-        const { width } = event.nativeEvent.layout;
-        setSliderWidth(width);
-        setXStart(0);
-        translateXtoValue.setValue(width - knobSize / 2);
-        setToValueOffset(width - knobSize / 2);
+        if (wasInitialized === false) {
+            const { width } = event.nativeEvent.layout;
+            setSliderWidth(width);
+            setXStart(0);
+            translateXtoValue.setValue(width - knobSize / 2);
+            setToValueOffset(width - knobSize / 2);
+            setWasInitialized(true);
+        }
     }
     // ------------------------------------------------------------------------------------------------
 
