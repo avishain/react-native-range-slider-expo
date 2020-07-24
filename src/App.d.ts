@@ -1,4 +1,5 @@
-export interface SliderProps {
+/// <reference types="react" />
+interface SliderProps {
     min: number;
     max: number;
     fromValueOnChange: (value: number) => void;
@@ -15,3 +16,5 @@ export interface SliderProps {
     showRangeLabels?: boolean;
     showValueLabels?: boolean;
 }
+declare const _default: ({ min, max, fromValueOnChange, toValueOnChange, step, styleSize, fromKnobColor, toKnobColor, inRangeBarColor, outOfRangeBarColor, valueLabelsTextColor, valueLabelsBackgroundColor, rangeLabelsTextColor, showRangeLabels, showValueLabels }: SliderProps) => JSX.Element;
+export default _default;
