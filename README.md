@@ -91,6 +91,7 @@ This project is licensed under the MIT License
 <br/><br/>
 
 ## Todo
+   - [ ] Add plain slider (with 1 knob)
    - [ ] Add textual values
    - [ ] Add prefix/suffix to numeric values
    - [ ] Beautify styling
