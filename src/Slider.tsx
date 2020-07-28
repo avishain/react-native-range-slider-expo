@@ -92,7 +92,7 @@ export const Slider = ({
             translateX.setValue(newOffset);
             inRangeScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
             scaleTo(valueLabelScale, 0.01);
-            valueOnChange(Math.round(((newOffset + (knobSize * 3 / 4)) * (max - min) / sliderWidth) / step) * step + min);
+            valueOnChange(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------

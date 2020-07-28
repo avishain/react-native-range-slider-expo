@@ -106,7 +106,7 @@ export default ({
             translateXfromValue.setValue(newOffset);
             leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
             scaleTo(fromValueScale, 0.01);
-            fromValueOnChange(Math.floor(((newOffset + (knobSize * 3 / 4)) * (max - min) / sliderWidth) / step) * step + min);
+            fromValueOnChange(Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ export default ({
             translateXtoValue.setValue(newOffset);
             rightBarScaleX.setValue(1.01 - ((newOffset + (knobSize / 2)) / sliderWidth));
             scaleTo(toValueScale, 0.01);
-            toValueOnChange(Math.ceil(((newOffset + (knobSize / 4)) * (max - min) / sliderWidth) / step) * step + min);
+            toValueOnChange(Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -208,11 +208,11 @@ export default ({
                 </View>
             }
             <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 2.5 }} onLayout={onLayout} />
-                <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 2.5, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
-                <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: knobSize / 2.5, borderRadius: knobSize / 2.5, backgroundColor: outOfRangeBarColor }} />
-                <Animated.View style={{ width: sliderWidth, height: knobSize / 2.5, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
-                <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: knobSize / 2.5, borderRadius: knobSize / 2.5, backgroundColor: outOfRangeBarColor }} />
+                <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 3 }} onLayout={onLayout} />
+                <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 3, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
+                <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: knobSize / 3, borderRadius: knobSize / 3, backgroundColor: outOfRangeBarColor }} />
+                <Animated.View style={{ width: sliderWidth, height: knobSize / 3, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
+                <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: knobSize / 3, borderRadius: knobSize / 3, backgroundColor: outOfRangeBarColor }} />
                 <PanGestureHandler onGestureEvent={onGestureEventFromValue} onHandlerStateChange={onHandlerStateChangeFromValue}>
                     <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: fromKnobColor, elevation: fromElevation, transform: [{ translateX: translateXfromValue }] }]} />
                 </PanGestureHandler>
