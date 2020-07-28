@@ -1,7 +1,7 @@
 # react-native-range-slider-expo
 ![Supports Android and iOS](https://img.shields.io/badge/platforms-android%20|%20ios-blue.svg) &nbsp;&nbsp;
 ![MIT License](https://img.shields.io/npm/l/react-native-range-slider-expo?color=red)
-#### Customizable range slider for react native apps <br/>
+### Customizable range slider for react native apps <br/>
 
 \* **NEW** \* <br/>
 You can now use also single slider (with one knob)<br/>and keep your project styling consistant
