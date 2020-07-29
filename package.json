@@ -1,10 +1,10 @@
 {
     "main": "./src/App",
     "name": "react-native-range-slider-expo",
-    "description": "range slider",
+    "description": "Customizable range slider for react native apps and compatible with Expo projects",
     "license": "MIT",
     "homepage": "https://github.com/D10S60948/react-native-range-slider-expo#readme",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "types": "./src/App",
     "files": ["src"],
     "scripts": {
