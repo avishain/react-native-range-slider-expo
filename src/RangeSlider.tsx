@@ -13,7 +13,7 @@ interface SliderProps {
     fromValueOnChange: (value: number) => void,
     toValueOnChange: (value: number) => void,
     step?: number,
-    styleSize?: 'small' | 'medium' | 'large',
+    styleSize?: 'small' | 'medium' | 'large' | number,
     fromKnobColor?: string,
     toKnobColor?: string,
     inRangeBarColor?: string,
@@ -22,7 +22,9 @@ interface SliderProps {
     valueLabelsBackgroundColor?: string,
     rangeLabelsTextColor?: string,
     showRangeLabels?: boolean,
-    showValueLabels?: boolean
+    showValueLabels?: boolean,
+    initialFromValue?: number,
+    initialToValue?: number
 }
 
 export default ({
@@ -37,19 +39,20 @@ export default ({
     valueLabelsBackgroundColor = '#3a4766',
     rangeLabelsTextColor = 'rgb(60,60,60)',
     showRangeLabels = true,
-    showValueLabels = true
+    showValueLabels = true,
+    initialFromValue,
+    initialToValue
 }: SliderProps) => {
 
     // settings
     const [wasInitialized, setWasInitialized] = useState(false);
-    const [numberOfSteps, setNumberOfSteps] = useState(0);
     const [knobSize, setknobSize] = useState(0);
     const [fontSize, setFontSize] = useState(15);
+    const [stepInPixels, setStepInPixels] = useState(0);
 
     const [fromValueOffset, setFromValueOffset] = useState(0);
     const [toValueOffset, setToValueOffset] = useState(0);
     const [sliderWidth, setSliderWidth] = useState(0);
-    const [xStart, setXStart] = useState(0);
     const [fromElevation, setFromElevation] = useState(3);
     const [toElevation, setToElevation] = useState(3);
 
@@ -67,24 +70,74 @@ export default ({
 
     // initalizing settings
     useEffect(() => {
-        setNumberOfSteps((max - min) / step);
-        fromValueTextRef.current?.setNativeProps({ text: min.toString() });
-        toValueTextRef.current?.setNativeProps({ text: max.toString() });
-    }, [min, max, step]);
+        if (wasInitialized) {
+            const stepSize = setStepSize(max, min, step);
+            fromValueTextRef.current?.setNativeProps({ text: min.toString() });
+            toValueTextRef.current?.setNativeProps({ text: max.toString() });
+            if (typeof initialFromValue === 'number' && initialFromValue >= min && initialFromValue <= max) {
+                const offset = ((initialFromValue - min) / step) * stepSize - (knobSize / 2);
+                setFromValueStatic(offset + knobSize / 2, knobSize, stepSize);
+                setValueText(offset + knobSize, true);
+            }
+            if (typeof initialToValue === 'number' && initialToValue >= min && initialToValue <= max && typeof initialFromValue === 'number' && initialToValue > initialFromValue) {
+                const offset = ((initialToValue - min) / step) * stepSize - (knobSize / 2);
+                setToValueStatic(offset, knobSize, stepSize);
+                setValueText(offset, false);
+            }
+        }
+    }, [min, max, step, initialFromValue, initialToValue, wasInitialized]);
     useEffect(() => {
-        const size = styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
+        const size = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
         setknobSize(size);
         translateXfromValue.setValue(-size / 4);
     }, [styleSize]);
 
+    // initalizing settings helpers
+    const setFromValueStatic = (newOffset: number, knobSize: number, stepInPixels: number) => {
+        newOffset = Math.floor((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
+        setFromValue(newOffset);
+        setFromValueOffset(newOffset);
+        fromValueOnChange(Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+    }
+    const setFromValue = (newOffset: number) => {
+        translateXfromValue.setValue(newOffset);
+        leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
+    }
+    const setToValueStatic = (newOffset: number, knobSize: number, stepInPixels: number) => {
+        newOffset = Math.ceil((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
+        setToValue(newOffset);
+        setToValueOffset(newOffset);
+        toValueOnChange(Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+    }
+    const setToValue = (newOffset: number) => {
+        translateXtoValue.setValue(newOffset);
+        rightBarScaleX.setValue(1.01 - ((newOffset + (knobSize / 2)) / sliderWidth));
+    }
+    const setStepSize = (max: number, min: number, step: number) => {
+        const numberOfSteps = ((max - min) / step);
+        const stepSize = sliderWidth / numberOfSteps;
+        setStepInPixels(stepSize);
+        return stepSize;
+    }
+    const setValueText = (totalOffset: number, from = true) => {
+        if (from && fromValueTextRef != null) {
+            const numericValue: number = Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+            fromValueTextRef.current?.setNativeProps({ text: numericValue.toString() });
+        }
+        else if (from === false && toValueTextRef != null) {
+            const numericValue: number = Math.ceil(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+            toValueTextRef.current?.setNativeProps({ text: numericValue.toString() });
+        }
+    }
+
+
+
     // from value gesture events ------------------------------------------------------------------------
     const onGestureEventFromValue = (event: PanGestureHandlerGestureEvent) => {
         let totalOffset = event.nativeEvent.translationX + fromValueOffset;
-        if (totalOffset >= xStart - knobSize / 2 && totalOffset < toValueOffset) {
+        if (totalOffset >= -knobSize / 2 && totalOffset < toValueOffset) {
             translateXfromValue.setValue(totalOffset);
-            if (fromValueTextRef != null) {
-                fromValueTextRef.current?.setNativeProps({ text: (Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
-            }
+            setValueText(totalOffset, true);
             leftBarScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth + 0.01);
         }
     }
@@ -94,19 +147,15 @@ export default ({
             setElevations(6, 5);
         }
         if (event.nativeEvent.state === State.END) {
-            const stepInPixels = sliderWidth / numberOfSteps;
             let newOffset = event.nativeEvent.translationX + fromValueOffset;
             newOffset = Math.floor((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
-            if (newOffset < xStart - knobSize / 2) {
-                newOffset = xStart - knobSize / 2;
+            if (newOffset < -knobSize / 2) {
+                newOffset = -knobSize / 2;
             } else if (newOffset >= toValueOffset) {
                 newOffset = toValueOffset - stepInPixels;
             }
-            setFromValueOffset(newOffset);
-            translateXfromValue.setValue(newOffset);
-            leftBarScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
+            setFromValueStatic(newOffset, knobSize, stepInPixels)
             scaleTo(fromValueScale, 0.01);
-            fromValueOnChange(Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -116,10 +165,7 @@ export default ({
         const totalOffset = event.nativeEvent.translationX + toValueOffset;
         if (totalOffset <= sliderWidth - knobSize / 2 && totalOffset > fromValueOffset) {
             translateXtoValue.setValue(totalOffset);
-            if (toValueTextRef != null) {
-                const numericValue: number = Math.ceil(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-                toValueTextRef.current?.setNativeProps({ text: numericValue.toString() });
-            }
+            setValueText(totalOffset, false);
             rightBarScaleX.setValue(1.01 - ((totalOffset + (knobSize / 2)) / sliderWidth));
         }
     }
@@ -129,7 +175,6 @@ export default ({
             setElevations(5, 6);
         }
         if (event.nativeEvent.state === State.END) {
-            const stepInPixels = sliderWidth / numberOfSteps;
             let newOffset = event.nativeEvent.translationX + toValueOffset;
             newOffset = Math.ceil((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
             if (newOffset > sliderWidth - knobSize / 2) {
@@ -166,7 +211,6 @@ export default ({
         if (wasInitialized === false) {
             const { width } = event.nativeEvent.layout;
             setSliderWidth(width);
-            setXStart(0);
             translateXtoValue.setValue(width - knobSize / 2);
             setToValueOffset(width - knobSize / 2);
             setWasInitialized(true);
@@ -182,6 +226,7 @@ export default ({
                     <Animated.View
                         style={{ position: 'absolute', bottom: 0, transform: [{ translateX: translateXfromValue }, { scale: fromValueScale }] }}
                     >
+
                         <Svg width={40} height={56} style={{ left: (knobSize - 40) / 2, justifyContent: 'center', alignItems: 'center' }} >
                             <Path
                                 d="M20.368027196163986,55.24077513402203 C20.368027196163986,55.00364778429386 37.12897994729114,42.11537830086061 39.19501224411266,22.754628132990383 C41.26104454093417,3.393877965120147 24.647119286738516,0.571820003300814 20.368027196163986,0.7019902620266703 C16.088935105589453,0.8321519518460209 -0.40167016290734386,3.5393865664909434 0.7742997013327574,21.806127302984205 C1.950269565572857,40.07286803947746 20.368027196163986,55.4779024837502 20.368027196163986,55.24077513402203 z"
@@ -190,7 +235,7 @@ export default ({
                                 stroke={valueLabelsBackgroundColor}
                             />
                         </Svg>
-                        <TextInput editable={false}  style={{ position: 'absolute', width: 40, textAlign: 'center', left: (knobSize - 40) / 2, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={fromValueTextRef} />
+                        <TextInput editable={false} style={{ position: 'absolute', width: 40, textAlign: 'center', left: (knobSize - 40) / 2, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={fromValueTextRef} />
                     </Animated.View>
                     <Animated.View
                         style={{ position: 'absolute', bottom: 0, alignItems: 'center', transform: [{ translateX: translateXtoValue }, { scale: toValueScale }] }}

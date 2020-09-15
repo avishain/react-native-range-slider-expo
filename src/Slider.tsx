@@ -12,7 +12,7 @@ interface SliderProps {
     max: number,
     valueOnChange: (value: number) => void,
     step?: number,
-    styleSize?: 'small' | 'medium' | 'large',
+    styleSize?: 'small' | 'medium' | 'large' | number,
     knobColor?: string,
     inRangeBarColor?: string,
     outOfRangeBarColor?: string,
@@ -20,7 +20,8 @@ interface SliderProps {
     valueLabelsBackgroundColor?: string,
     rangeLabelsTextColor?: string,
     showRangeLabels?: boolean,
-    showValueLabels?: boolean
+    showValueLabels?: boolean,
+    initialValue?: number
 }
 
 export const Slider = ({
@@ -34,11 +35,12 @@ export const Slider = ({
     valueLabelsBackgroundColor = '#3a4766',
     rangeLabelsTextColor = 'rgb(60,60,60)',
     showRangeLabels = true,
-    showValueLabels = true
+    showValueLabels = true,
+    initialValue
 }: SliderProps) => {
 
     // settings
-    const [numberOfSteps, setNumberOfSteps] = useState(0);
+    const [stepInPixels, setStepInPixels] = useState(0);
     const [knobSize, setknobSize] = useState(0);
     const [fontSize] = useState(15);
 
@@ -55,19 +57,47 @@ export const Slider = ({
 
     // initalizing settings
     useEffect(() => {
-        setNumberOfSteps((max - min) / step);
-        valueTextRef.current?.setNativeProps({ text: min.toString() });
-    }, [min, max, step]);
+        if (sliderWidth > 0) {
+            const stepSize = setStepSize(max, min, step);
+            valueTextRef.current?.setNativeProps({ text: min.toString() });
+            if (typeof initialValue === 'number' && initialValue >= min && initialValue <= max) {
+                const offset = ((initialValue - min) / step) * stepSize - (knobSize / 2);
+                setValueStatic(offset, knobSize, stepSize);
+                setValueText(offset);
+            }
+        }
+    }, [min, max, step, initialValue, sliderWidth]);
     useEffect(() => {
-        const size = styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
+        const size = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
         setknobSize(size);
         translateX.setValue(-size / 4);
     }, [styleSize]);
 
+    const setValueStatic = (newOffset: number, knobSize: number, stepInPixels: number) => {
+        newOffset = Math.round((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
+        settingValue(newOffset);
+        setValueOffset(newOffset);
+        valueOnChange(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+    }
+    const settingValue = (newOffset: number) => {
+        translateX.setValue(newOffset);
+        inRangeScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
+    }
+    const setValueText = (totalOffset: number) => {
+        const numericValue: number = Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+        valueTextRef.current?.setNativeProps({ text: numericValue.toString() });
+    }
+    const setStepSize = (max: number, min: number, step: number) => {
+        const numberOfSteps = ((max - min) / step);
+        const stepSize = sliderWidth / numberOfSteps;
+        setStepInPixels(stepSize);
+        return stepSize;
+    }
+
     // value gesture events ------------------------------------------------------------------------
     const onGestureEvent = (event: PanGestureHandlerGestureEvent) => {
         let totalOffset = event.nativeEvent.translationX + valueOffset;
-        if (totalOffset >= - knobSize / 2 && totalOffset <= sliderWidth - knobSize/2) {
+        if (totalOffset >= - knobSize / 2 && totalOffset <= sliderWidth - knobSize / 2) {
             translateX.setValue(totalOffset);
             if (valueTextRef != null) {
                 valueTextRef.current?.setNativeProps({ text: (Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
@@ -80,19 +110,15 @@ export const Slider = ({
             scaleTo(valueLabelScale, 1);
         }
         if (event.nativeEvent.state === State.END) {
-            const stepInPixels = sliderWidth / numberOfSteps;
             let newOffset = event.nativeEvent.translationX + valueOffset;
             newOffset = Math.round((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
-            if (newOffset <  -knobSize / 2) {
-                newOffset =  -knobSize / 2;
-            } else if (newOffset >= sliderWidth - knobSize/2) {
-                newOffset = sliderWidth- knobSize/2;
+            if (newOffset < -knobSize / 2) {
+                newOffset = -knobSize / 2;
+            } else if (newOffset >= sliderWidth - knobSize / 2) {
+                newOffset = sliderWidth - knobSize / 2;
             }
-            setValueOffset(newOffset);
-            translateX.setValue(newOffset);
-            inRangeScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
+            setValueStatic(newOffset, knobSize, stepInPixels);
             scaleTo(valueLabelScale, 0.01);
-            valueOnChange(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         }
     }
     // ------------------------------------------------------------------------------------------------
@@ -109,7 +135,8 @@ export const Slider = ({
 
     // setting bar width ------------------------------------------------------------------------------
     const onLayout = (event: LayoutChangeEvent) => {
-            setSliderWidth(event.nativeEvent.layout.width);
+        setSliderWidth(event.nativeEvent.layout.width);
+
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -159,7 +186,7 @@ const styles = StyleSheet.create({
     },
     knob: {
         position: 'absolute',
-        elevation: 4 
+        elevation: 4
     },
     bar: {
         position: 'absolute',

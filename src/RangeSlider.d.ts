@@ -5,7 +5,7 @@ interface SliderProps {
     fromValueOnChange: (value: number) => void;
     toValueOnChange: (value: number) => void;
     step?: number;
-    styleSize?: 'small' | 'medium' | 'large';
+    styleSize?: 'small' | 'medium' | 'large' | number;
     fromKnobColor?: string;
     toKnobColor?: string;
     inRangeBarColor?: string;
@@ -15,6 +15,8 @@ interface SliderProps {
     rangeLabelsTextColor?: string;
     showRangeLabels?: boolean;
     showValueLabels?: boolean;
+    initialFromValue?: number;
+    initialToValue?: number;
 }
 declare const _default: ({ min, max, fromValueOnChange, toValueOnChange, step, styleSize, fromKnobColor, toKnobColor, inRangeBarColor, outOfRangeBarColor, valueLabelsTextColor, valueLabelsBackgroundColor, rangeLabelsTextColor, showRangeLabels, showValueLabels }: SliderProps) => JSX.Element;
 export default _default;

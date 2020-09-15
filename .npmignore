@@ -10,8 +10,6 @@ web-build/
 .expo-shared/*
 app.json/*
 babel.config.js/*
-image.png
-
 
 # macOS
 .DS_Store
