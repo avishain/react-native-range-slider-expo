@@ -3,8 +3,6 @@
 ![MIT License](https://img.shields.io/npm/l/react-native-range-slider-expo?color=red)
 ### Customizable range slider for react native apps <br/><br/>
 
-\* **NEW** \* <br/>
-You can now use also single slider (with one knob)<br/>and keep your project styling consistant
 <br/><br/>
 [Please let me know if you encounter any issues or if you have any imporvements suggestion, comments, etc..](https://github.com/D10S60948/react-native-range-slider-expo/issues)
 
@@ -14,10 +12,13 @@ You can now use also single slider (with one knob)<br/>and keep your project sty
 
 <br/><br/>
 ## Usage
-#### Examples - images
+#### Examples - display
 
 <div style="display:flex;flex-direction:row">
   <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1600198194/demo_tzty07.gif" height="500" width="280" />
+</div>
+<br/>
+<div style="display:flex;flex-direction:row">
   <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960302/image2_eqbpiw.png" style="height:100%;width:100%"/>
   <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960364/image_daoab0.png" style="height:100%;width:100%"/>
 </div>
