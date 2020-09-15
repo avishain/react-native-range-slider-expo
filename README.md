@@ -3,8 +3,6 @@
 ![MIT License](https://img.shields.io/npm/l/react-native-range-slider-expo?color=red)
 ### Customizable range slider for react native apps <br/><br/>
 
-\* **NEW** \* <br/>
-You can now use also single slider (with one knob)<br/>and keep your project styling consistant
 <br/><br/>
 [Please let me know if you encounter any issues or if you have any imporvements suggestion, comments, etc..](https://github.com/D10S60948/react-native-range-slider-expo/issues)
 
@@ -14,75 +12,50 @@ You can now use also single slider (with one knob)<br/>and keep your project sty
 
 <br/><br/>
 ## Usage
-#### Examples - images
+#### Examples - display
 
+<div style="display:flex;flex-direction:row">
+  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1600198194/demo_tzty07.gif" height="500" width="280" />
+</div>
+<br/>
 <div style="display:flex;flex-direction:row">
   <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960302/image2_eqbpiw.png" style="height:100%;width:100%"/>
   <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960364/image_daoab0.png" style="height:100%;width:100%"/>
 </div>
 
-#### Examples - code (reflects the left image)
+#### Examples - code (reflects the short video above)
 
 ```javascript
 import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 ```
 ```javascript
-  const [fromValue, setFromValue] = useState(0);
-  const [toValue, setToValue] = useState(0);
-  const [value, setValue] = useState(0);
-  const valueOnChange = (value: number) => setValue(value);
-  const toValueOnChange = (value: number) => setToValue(value);
-  const fromValueOnChange = (value: number) => setFromValue(value);
-  
-  return (
-        <View style={{ flex: 1, padding: 30, justifyContent: 'space-evenly' }}>
-            <View>
-                <RangeSlider
-                    fromValueOnChange={fromValueOnChange}
-                    toValueOnChange={toValueOnChange}
-                    min={0}
-                    max={100}
-                />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text>fromValue: {fromValue}</Text>
-                    <Text>toValue: {toValue}</Text>
-                </View>
-            </View>
-            <View>
-                <RangeSlider
-                    fromValueOnChange={value => console.log(value)}
-                    toValueOnChange={value => console.log(value)}
-                    min={20}
-                    max={40}
-                    step={5}
-                    fromKnobColor='red'
-                    toKnobColor='green'
-                    styleSize='small'
-                    showRangeLabels={false}
-                />
-            </View>
-            <View>
-                <Slider
-                    valueOnChange={value => console.log(value)}
-                    min={0}
-                    max={30}
-                />
-            </View>
-            <View>
-                <Slider
-                    valueOnChange={valueOnChange}
-                    min={0}
-                    max={30}
-                    inRangeBarColor='red'
-                    outOfRangeBarColor='brown'
-                    styleSize='large'
-                    rangeLabelsTextColor='blue'
-                    knobColor='black'
-                />
-                <Text>value: {value}</Text>
-            </View>
-        </View>
-    );
+     const [fromValue, setFromValue] = useState(0);
+     const [toValue, setToValue] = useState(0);
+     const [value, setValue] = useState(0);
+     return (
+          <View style={styles.container}>
+               <View>
+                    <RangeSlider min={5} max={25}
+                         fromValueOnChange={value => setFromValue(value)}
+                         toValueOnChange={value => setToValue(value)}
+                         initialFromValue={11}
+                    />
+                    <Text>from value:  {fromValue}</Text>
+                    <Text>to value:  {toValue}</Text>
+               </View>
+               <View>
+                    <Slider min={0} max={40} step={4}
+                         valueOnChange={value => setValue(value)}
+                         initialValue={12}
+                         knobColor='red'
+                         valueLabelsBackgroundColor='black'
+                         inRangeBarColor='purple'
+                         outOfRangeBarColor='orange'
+                    />
+                    <Text>value:  {value}</Text>
+               </View>
+          </View>
+     );
 ```
 
 <br/>
@@ -95,7 +68,7 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | fromValueOnChange | callback | yes | - |
 | toValueOnChange | callback | yes | - |
 | step | number | no | 1 |
-| styleSize | string ( 'small' \| 'medium' \| 'large' )  | no | 'medium' |
+| styleSize | string ( 'small' \| 'medium' \| 'large' \| number )  | no | 'medium' |
 | fromKnobColor | string (color) | no | '#00a2ff' |
 | toKnobColor | string (color) | no | '#00a2ff' |
 | inRangeBarColor | string (color) | no | 'rgb(100,100,100)' |
@@ -105,6 +78,8 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | rangeLabelsTextColor | string (color) | no | 'rgb(60,60,60)' |
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
+| initialFromValue | number | no | as 'min' value |
+| initialToValue | number | no | as 'max' value |
 
 ## API - Slider (1 knob)
 | Property | Type | Required | Default |
@@ -113,7 +88,7 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | max | number | yes | - |
 | valueOnChange | callback | yes | - |
 | step | number | no | 1 |
-| styleSize | string ( 'small' \| 'medium' \| 'large' )  | no | 'medium' |
+| styleSize | string ( 'small' \| 'medium' \| 'large' \| number )  | no | 'medium' |
 | knobColor | string (color) | no | '#00a2ff' |
 | inRangeBarColor | string (color) | no | 'rgb(200,200,200)' |
 | outOfRangeBarColor | string (color) | no | 'rgb(100,100,100)' |
@@ -122,6 +97,7 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | rangeLabelsTextColor | string (color) | no | 'rgb(60,60,60)' |
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
+| initialValue | number | no | as 'min' value |
 <br/><br/>
 
 ## License
@@ -131,6 +107,8 @@ This project is licensed under the MIT License
 
 ## Todo
    - [X] Add plain slider (with 1 knob)
+   - [X] Add initial values
+   - [X] Add numeric style size
    - [ ] Add textual values
    - [ ] Add prefix/suffix to numeric values
    - [ ] Beautify styling
