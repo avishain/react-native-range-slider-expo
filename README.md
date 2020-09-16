@@ -3,7 +3,7 @@
 ![MIT License](https://img.shields.io/npm/l/react-native-range-slider-expo?color=red)
 ### Customizable range slider for react native apps <br/><br/>
 
-<br/><br/>
+<br/>
 [Please let me know if you encounter any issues or if you have any imporvements suggestion, comments, etc..](https://github.com/D10S60948/react-native-range-slider-expo/issues)
 
 <br/><br/>
