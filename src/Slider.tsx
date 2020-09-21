@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput } from 'react-native';
+import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
+
+const osRtl = I18nManager.isRTL;
 
 const SMALL_SIZE = 24;
 const MEDIUM_SIZE = 34;
@@ -44,6 +46,10 @@ export const Slider = ({
     const [knobSize, setknobSize] = useState(0);
     const [fontSize] = useState(15);
 
+    // rtl settings
+    const [flexDirection, setFlexDirection] = useState<"row" | "row-reverse" | "column" | "column-reverse" | undefined>('row');
+    const [svgOffset, setSvgOffset] = useState<object>({ left: (knobSize - 40) / 2 });
+
     const [valueOffset, setValueOffset] = useState(0);
     const [sliderWidth, setSliderWidth] = useState(0);
 
@@ -56,6 +62,10 @@ export const Slider = ({
     const valueTextRef = React.createRef<TextInput>();
 
     // initalizing settings
+    useEffect(() => {
+        setFlexDirection(osRtl ? 'row-reverse' : 'row');
+        setSvgOffset(osRtl ? { right: (knobSize - 40) / 2 } : { left: (knobSize - 40) / 2 });
+    }, []);
     useEffect(() => {
         if (sliderWidth > 0) {
             const stepSize = setStepSize(max, min, step);
@@ -136,7 +146,6 @@ export const Slider = ({
     // setting bar width ------------------------------------------------------------------------------
     const onLayout = (event: LayoutChangeEvent) => {
         setSliderWidth(event.nativeEvent.layout.width);
-
     }
     // ------------------------------------------------------------------------------------------------
 
@@ -144,11 +153,11 @@ export const Slider = ({
         <View style={[styles.container, { padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
             {
                 showValueLabels &&
-                <View style={{ width: '100%' }}>
+                <View style={{ width: '100%', flexDirection }}>
                     <Animated.View
                         style={{ position: 'absolute', bottom: 0, transform: [{ translateX }, { scale: valueLabelScale }] }}
                     >
-                        <Svg width={40} height={56} style={{ left: (knobSize - 40) / 2, justifyContent: 'center', alignItems: 'center' }} >
+                        <Svg width={40} height={56} style={{ ...svgOffset, justifyContent: 'center', alignItems: 'center' }} >
                             <Path
                                 d="M20.368027196163986,55.24077513402203 C20.368027196163986,55.00364778429386 37.12897994729114,42.11537830086061 39.19501224411266,22.754628132990383 C41.26104454093417,3.393877965120147 24.647119286738516,0.571820003300814 20.368027196163986,0.7019902620266703 C16.088935105589453,0.8321519518460209 -0.40167016290734386,3.5393865664909434 0.7742997013327574,21.806127302984205 C1.950269565572857,40.07286803947746 20.368027196163986,55.4779024837502 20.368027196163986,55.24077513402203 z"
                                 strokeWidth={1}
@@ -156,11 +165,11 @@ export const Slider = ({
                                 stroke={valueLabelsBackgroundColor}
                             />
                         </Svg>
-                        <TextInput style={{ position: 'absolute', width: 40, textAlign: 'center', left: (knobSize - 40) / 2, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={valueTextRef} />
+                        <TextInput style={{ position: 'absolute', width: 40, textAlign: 'center', ...svgOffset, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={valueTextRef} />
                     </Animated.View>
                 </View>
             }
-            <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection, alignItems: 'center' }}>
                 <View style={[styles.bar, { backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 3 }]} onLayout={onLayout} />
                 <Animated.View style={{ width: sliderWidth, height: knobSize / 3, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: inRangeScaleX }, { translateX: sliderWidth / 2 }] }} />
                 <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2.5, height: knobSize / 3, borderRadius: knobSize / 3, backgroundColor: outOfRangeBarColor }} />
@@ -170,7 +179,7 @@ export const Slider = ({
             </View>
             {
                 showRangeLabels &&
-                <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{ width: '100%', flexDirection, justifyContent: 'space-between' }}>
                     <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize, marginLeft: -7 }}>{min}</Text>
                     <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{max}</Text>
                 </View>
