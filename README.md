@@ -2,8 +2,8 @@
 ![Supports Android and iOS](https://img.shields.io/badge/platforms-android%20|%20ios-blue.svg) &nbsp;&nbsp;
 ![MIT License](https://img.shields.io/npm/l/react-native-range-slider-expo?color=red)
 ### Customizable range slider for react native apps <br/><br/>
-
 <br/>
+
 [Please let me know if you encounter any issues or if you have any imporvements suggestion, comments, etc..](https://github.com/D10S60948/react-native-range-slider-expo/issues)
 
 <br/><br/>
