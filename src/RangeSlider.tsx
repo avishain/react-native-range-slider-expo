@@ -233,7 +233,7 @@ export default ({
                 showValueLabels &&
                 <View style={{ width: '100%', flexDirection }}>
                     <Animated.View
-                        style={{ position: 'absolute', bottom: 0, transform: [{ translateX: translateXfromValue }, { scale: fromValueScale }] }}
+                        style={{ position: 'absolute', bottom: 0, left: 0, transform: [{ translateX: translateXfromValue }, { scale: fromValueScale }] }}
                     >
 
                         <Svg width={40} height={56} style={[svgOffset, { justifyContent: 'center', alignItems: 'center' }]} >
@@ -247,7 +247,7 @@ export default ({
                         <TextInput editable={false} style={{ position: 'absolute', width: 40, textAlign: 'center', ...svgOffset, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={fromValueTextRef} />
                     </Animated.View>
                     <Animated.View
-                        style={{ position: 'absolute', bottom: 0, alignItems: 'center', transform: [{ translateX: translateXtoValue }, { scale: toValueScale }] }}
+                        style={{ position: 'absolute', bottom: 0, left: 0, alignItems: 'center', transform: [{ translateX: translateXtoValue }, { scale: toValueScale }] }}
                     >
                         <Svg width={40} height={56} style={[svgOffset, { justifyContent: 'center', alignItems: 'center' }]} >
                             <Path

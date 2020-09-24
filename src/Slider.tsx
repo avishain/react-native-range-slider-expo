@@ -155,7 +155,7 @@ export const Slider = ({
                 showValueLabels &&
                 <View style={{ width: '100%', flexDirection }}>
                     <Animated.View
-                        style={{ position: 'absolute', bottom: 0, transform: [{ translateX }, { scale: valueLabelScale }] }}
+                        style={{ position: 'absolute', bottom: 0, left: 0, transform: [{ translateX }, { scale: valueLabelScale }] }}
                     >
                         <Svg width={40} height={56} style={{ ...svgOffset, justifyContent: 'center', alignItems: 'center' }} >
                             <Path
