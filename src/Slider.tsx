@@ -153,7 +153,7 @@ export const Slider = ({
         <View style={[styles.container, { padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
             {
                 showValueLabels &&
-                <View style={{ width: '100%', flexDirection }}>
+                <View style={{ width: '100%', height: 1, flexDirection }}>
                     <Animated.View
                         style={{ position: 'absolute', bottom: 0, left: 0, transform: [{ translateX }, { scale: valueLabelScale }] }}
                     >
