@@ -1,2 +1,2 @@
-export { default as RangeSlider } from './RangeSlider';
-export * from './Slider';
+export { default } from './RangeSlider';
+export { Slider } from './Slider';

@@ -4,7 +4,7 @@
     "description": "Customizable range slider for react native apps and compatible with Expo projects",
     "license": "MIT",
     "homepage": "https://github.com/D10S60948/react-native-range-slider-expo#readme",
-    "version": "1.3.6",
+    "version": "1.3.7",
     "types": "./src/App",
     "files": [
         "src"
@@ -18,7 +18,7 @@
         "build": "tsc --emitDeclarationOnly"
     },
     "peerDependencies": {
-        "expo": "~38.0.8",
+        "expo": "~40.0.0",
         "react": "~16.11.0",
         "react-dom": "~16.11.0",
         "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",

@@ -73,12 +73,13 @@ export default ({
     // refs
     const toValueTextRef = React.createRef<TextInput>();
     const fromValueTextRef = React.createRef<TextInput>();
+    const opacity = React.useRef<Animated.Value>(new Animated.Value(0)).current;
 
     // initalizing settings
     useEffect(() => {
         setFlexDirection(osRtl ? 'row-reverse' : 'row');
         setSvgOffset(osRtl ? { right: (knobSize - 40) / 2 } : { left: (knobSize - 40) / 2 });
-    }, []);
+    }, [knobSize]);
     useEffect(() => {
         if (wasInitialized) {
             const stepSize = setStepSize(max, min, step);
@@ -94,6 +95,11 @@ export default ({
                 setToValueStatic(offset, knobSize, stepSize);
                 setValueText(offset, false);
             }
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: 64,
+                useNativeDriver: true
+            }).start();
         }
     }, [min, max, step, initialFromValue, initialToValue, wasInitialized]);
     useEffect(() => {
@@ -228,7 +234,7 @@ export default ({
     // ------------------------------------------------------------------------------------------------
 
     return (
-        <View style={[styles.container, { padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
+        <Animated.View style={[styles.container, { opacity, padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
             {
                 showValueLabels &&
                 <View style={{ width: '100%',height: 1, flexDirection }}>
@@ -281,7 +287,7 @@ export default ({
                     <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{max}</Text>
                 </View>
             }
-        </View>
+        </Animated.View>
     );
 }
 
