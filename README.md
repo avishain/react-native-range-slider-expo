@@ -96,6 +96,28 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | initialValue | number | no | as 'min' value |
 <br/><br/>
 
+## API - Textual Slider
+| Property | Type | Required | Default | 
+| :---     |:----:|  :-----: | :-----: | 
+| values | [ItemType] | yes | - |
+| valueOnChange | callback | yes | - |
+| styleSize | string ( 'small' \| 'medium' \| 'large' \| number )  | no | 'medium' |
+| knobColor | string (color) | no | '#00a2ff' |
+| inRangeBarColor | string (color) | no | 'rgb(200,200,200)' |
+| outOfRangeBarColor | string (color) | no | 'rgb(100,100,100)' |
+| valueLabelsTextColor | string (color) | no | 'white' |
+| valueLabelsBackgroundColor | string (color) | no | '#3a4766' |
+| rangeLabelsTextColor | string (color) | no | 'rgb(60,60,60)' |
+| showRangeLabels | boolean | no | true |
+| showValueLabels | boolean | no | true |
+| initialValue | number | no | - |
+<br/><br/>
+
+type ItemType = {
+    value: number,
+    text: string
+}
+
 ## License
 This project is licensed under the MIT License
 
@@ -105,7 +127,7 @@ This project is licensed under the MIT License
    - [X] Add plain slider (with 1 knob)
    - [X] Add initial values
    - [X] Add numeric style size
-   - [ ] Add textual values
+   - [X] Add textual values
    - [ ] Add prefix/suffix to numeric values
    - [ ] Beautify styling
    <!-- - [ ] Knob is pressed indication -->
