@@ -77,6 +77,8 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | initialFromValue | number | no | as 'min' value |
 | initialToValue | number | no | as 'max' value |
 
+<br/>
+
 ## API - Slider (1 knob)
 | Property | Type | Required | Default |
 | :---     |:----:|  :-----: | :-----: | 
@@ -94,7 +96,8 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
 | initialValue | number | no | as 'min' value |
-<br/><br/>
+
+<br/>
 
 ## API - Textual Slider
 | Property | Type | Required | Default | 
@@ -111,12 +114,8 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
 | initialValue | number | no | - |
-<br/><br/>
 
-type ItemType = {
-    value: number,
-    text: string
-}
+<br/><br/>
 
 ## License
 This project is licensed under the MIT License
