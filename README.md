@@ -15,8 +15,8 @@
 </div>
 <br/>
 <div style="display:flex;flex-direction:row">
-  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960302/image2_eqbpiw.png" style="height:100%;width:100%"/>
-  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960364/image_daoab0.png" style="height:100%;width:100%"/>
+  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960302/image2_eqbpiw.png" height="500" width="280" />
+  <img src="https://res.cloudinary.com/dexts7jfo/image/upload/v1595960364/image_daoab0.png" height="500" width="280" />
 </div>
 
 #### Examples - code (reflects the short video above)
