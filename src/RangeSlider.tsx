@@ -26,7 +26,8 @@ interface SliderProps {
   showRangeLabels?: boolean,
   showValueLabels?: boolean,
   initialFromValue?: number,
-  initialToValue?: number
+  initialToValue?: number,
+  knobSize?: number
 }
 
 export default ({
@@ -43,7 +44,8 @@ export default ({
   showRangeLabels = true,
   showValueLabels = true,
   initialFromValue,
-  initialToValue
+  initialToValue,
+  knobSize: _knobSize
 }: SliderProps) => {
 
   const decimals = countDecimals(step);
@@ -54,6 +56,7 @@ export default ({
   // settings
   const [wasInitialized, setWasInitialized] = useState(false);
   const [knobSize, setknobSize] = useState(0);
+  const [barHeight, setBarHeight] = useState(0);
   const [stepInPixels, setStepInPixels] = useState(0);
 
   // rtl settings
@@ -105,8 +108,10 @@ export default ({
     }
   }, [min, max, step, initialFromValue, initialToValue, wasInitialized]);
   useEffect(() => {
-    const size = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
+    const sizeBasedOnStyleSize = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
+    const size = _knobSize ?? sizeBasedOnStyleSize;
     setknobSize(size);
+    setBarHeight(sizeBasedOnStyleSize / 3)
     translateXfromValue.setValue(-size / 4);
   }, [styleSize]);
 
@@ -252,11 +257,11 @@ export default ({
         </View>
       }
       <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection, alignItems: 'center' }}>
-        <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 3 }} onLayout={onLayout} />
-        <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: knobSize / 3, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
-        <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: knobSize / 3, borderRadius: knobSize / 3, backgroundColor: outOfRangeBarColor }} />
-        <Animated.View style={{ width: sliderWidth, height: knobSize / 3, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
-        <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: knobSize / 3, borderRadius: knobSize / 3, backgroundColor: outOfRangeBarColor }} />
+        <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight }} onLayout={onLayout} />
+        <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
+        <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
+        <Animated.View style={{ width: sliderWidth, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
+        <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
         <PanGestureHandler onGestureEvent={onGestureEventFromValue} onHandlerStateChange={onHandlerStateChangeFromValue}>
           <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: fromKnobColor, elevation: fromElevation, transform: [{ translateX: translateXfromValue }] }]} />
         </PanGestureHandler>
