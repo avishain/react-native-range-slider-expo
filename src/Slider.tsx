@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
-
-const osRtl = I18nManager.isRTL;
+import { countDecimals, osRtl } from './components/utils';
 
 const SMALL_SIZE = 24;
 const MEDIUM_SIZE = 34;
@@ -40,7 +39,11 @@ export const Slider = ({
     showValueLabels = true,
     initialValue
 }: SliderProps) => {
-
+    const decimals = countDecimals(step);
+    const toDecimal = (num: number) => {
+        const m = 10 ** decimals;
+        return Math.round(num * m) / m;
+    }
     // settings
     const [stepInPixels, setStepInPixels] = useState(0);
     const [knobSize, setknobSize] = useState(0);
@@ -93,14 +96,14 @@ export const Slider = ({
         newOffset = Math.round((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
         settingValue(newOffset);
         setValueOffset(newOffset);
-        valueOnChange(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+        valueOnChange(toDecimal(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min));
     }
     const settingValue = (newOffset: number) => {
         translateX.setValue(newOffset);
         inRangeScaleX.setValue((newOffset + (knobSize / 2)) / sliderWidth + 0.01);
     }
     const setValueText = (totalOffset: number) => {
-        const numericValue: number = Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+        const numericValue: number = toDecimal(Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
         valueTextRef.current?.setNativeProps({ text: numericValue.toString() });
     }
     const setStepSize = (max: number, min: number, step: number) => {
@@ -116,7 +119,7 @@ export const Slider = ({
         if (totalOffset >= - knobSize / 2 && totalOffset <= sliderWidth - knobSize / 2) {
             translateX.setValue(totalOffset);
             if (valueTextRef != null) {
-                valueTextRef.current?.setNativeProps({ text: (Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
+                valueTextRef.current?.setNativeProps({ text: toDecimal(Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
             }
             inRangeScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth + 0.01);
         }
