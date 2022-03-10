@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import React, { useState, useEffect, memo, useMemo } from 'react';
+import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, ViewStyle } from 'react-native';
+import { gestureHandlerRootHOC, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import KnobBubble from './components/KnobBubble';
-import { countDecimals, osRtl } from './components/utils';
+import useUtils, { osRtl } from './components/utils';
 
 const SMALL_SIZE = 24;
 const MEDIUM_SIZE = 34;
@@ -27,10 +27,12 @@ interface SliderProps {
   showValueLabels?: boolean,
   initialFromValue?: number,
   initialToValue?: number,
-  knobSize?: number
+  knobSize?: number,
+  containerStyle?: ViewStyle,
+  barHeight?: number,
 }
 
-export default ({
+const RangeSlider = memo(({
   min, max, fromValueOnChange, toValueOnChange,
   step = 1,
   styleSize = 'medium',
@@ -45,14 +47,11 @@ export default ({
   showValueLabels = true,
   initialFromValue,
   initialToValue,
-  knobSize: _knobSize
+  knobSize: _knobSize,
+  containerStyle: customContainerStyle = {},
+  barHeight: customBarHeight,
 }: SliderProps) => {
-
-  const decimals = countDecimals(step);
-  const toDecimal = (num: number) => {
-    const m = 10 ** decimals;
-    return Math.round(num * m) / m;
-  }
+  
   // settings
   const [wasInitialized, setWasInitialized] = useState(false);
   const [knobSize, setknobSize] = useState(0);
@@ -80,11 +79,13 @@ export default ({
   const toValueTextRef = React.createRef<TextInput>();
   const fromValueTextRef = React.createRef<TextInput>();
   const opacity = React.useRef<Animated.Value>(new Animated.Value(0)).current;
+  const {decimals, decimalRound} = useUtils({step});
 
   // initalizing settings
   useEffect(() => {
     setFlexDirection(osRtl ? 'row-reverse' : 'row');
   }, [knobSize]);
+  
   useEffect(() => {
     if (wasInitialized) {
       const stepSize = setStepSize(max, min, step);
@@ -107,13 +108,14 @@ export default ({
       }).start();
     }
   }, [min, max, step, initialFromValue, initialToValue, wasInitialized]);
+
   useEffect(() => {
     const sizeBasedOnStyleSize = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
     const size = _knobSize ?? sizeBasedOnStyleSize;
-    setknobSize(size);
-    setBarHeight(sizeBasedOnStyleSize / 3)
+    setknobSize(customBarHeight ? Math.max(customBarHeight, size) : size);
+    setBarHeight(customBarHeight ?? sizeBasedOnStyleSize / 3)
     translateXfromValue.setValue(-size / 4);
-  }, [styleSize]);
+  }, [styleSize, customBarHeight]);
 
   // initalizing settings helpers
   const setFromValueStatic = (newOffset: number, knobSize: number, stepInPixels: number) => {
@@ -121,7 +123,7 @@ export default ({
     setFromValue(newOffset);
     setFromValueOffset(newOffset);
     const changeTo = Math.floor(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-    fromValueOnChange(toDecimal(changeTo));
+    fromValueOnChange(decimalRound(changeTo));
   }
   const setFromValue = (newOffset: number) => {
     translateXfromValue.setValue(newOffset);
@@ -132,7 +134,7 @@ export default ({
     setToValue(newOffset);
     setToValueOffset(newOffset);
     const changeTo = Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-    toValueOnChange(toDecimal(changeTo));
+    toValueOnChange(decimalRound(changeTo));
   }
   const setToValue = (newOffset: number) => {
     translateXtoValue.setValue(newOffset);
@@ -209,7 +211,7 @@ export default ({
       rightBarScaleX.setValue(1.01 - ((newOffset + (knobSize / 2)) / sliderWidth));
       scaleTo(toValueScale, 0.01);
       const changeTo = Math.ceil(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-      toValueOnChange(toDecimal(changeTo));
+      toValueOnChange(decimalRound(changeTo));
     }
   }
   // ------------------------------------------------------------------------------------------------
@@ -239,8 +241,10 @@ export default ({
   }
   // ------------------------------------------------------------------------------------------------
 
+  const padding = useMemo(() => styleSize === 'large' ? 17 : styleSize === 'medium' ? 24 : 31, [styleSize]);
+
   return (
-    <Animated.View style={[styles.container, { opacity, padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
+    <Animated.View style={[styles.container, { opacity, padding }, customContainerStyle]}>
       {
         showValueLabels &&
         <View style={{ width: '100%', height: 1, flexDirection }}>
@@ -278,7 +282,7 @@ export default ({
       }
     </Animated.View>
   );
-}
+})
 
 const styles = StyleSheet.create({
   container: {
@@ -290,3 +294,5 @@ const styles = StyleSheet.create({
     elevation: 4
   }
 });
+
+export default gestureHandlerRootHOC(RangeSlider);

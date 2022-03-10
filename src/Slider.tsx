@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import React, { useState, useEffect, useMemo, memo } from 'react';
+import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager, ViewStyle } from 'react-native';
+import { gestureHandlerRootHOC, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import useUtils from './components/utils';
 import Svg, { Path } from 'react-native-svg';
 
 const osRtl = I18nManager.isRTL;
@@ -23,10 +24,11 @@ interface SliderProps {
     rangeLabelsTextColor?: string,
     showRangeLabels?: boolean,
     showValueLabels?: boolean,
-    initialValue?: number
+    initialValue?: number,
+    containerStyle?: ViewStyle,
 }
 
-export const Slider = ({
+export const Slider = gestureHandlerRootHOC(memo(({
     min, max, valueOnChange,
     step = 1,
     styleSize = 'medium',
@@ -38,7 +40,8 @@ export const Slider = ({
     rangeLabelsTextColor = 'rgb(60,60,60)',
     showRangeLabels = true,
     showValueLabels = true,
-    initialValue
+    initialValue,
+    containerStyle: customContainerStyle = {},
 }: SliderProps) => {
 
     // settings
@@ -62,15 +65,18 @@ export const Slider = ({
     const valueTextRef = React.createRef<TextInput>();
     const opacity = React.useRef<Animated.Value>(new Animated.Value(0)).current;
 
+  const {decimals, decimalRound} = useUtils({step});
+
     // initalizing settings
     useEffect(() => {
         setFlexDirection(osRtl ? 'row-reverse' : 'row');
         setSvgOffset(osRtl ? { right: (knobSize - 40) / 2 } : { left: (knobSize - 40) / 2 });
     }, [knobSize]);
+
     useEffect(() => {
         if (sliderWidth > 0) {
             const stepSize = setStepSize(max, min, step);
-            valueTextRef.current?.setNativeProps({ text: min.toString() });
+            valueTextRef.current?.setNativeProps({ text: decimals > 0 ? min.toFixed(decimals) : min.toString() });
             if (typeof initialValue === 'number' && initialValue >= min && initialValue <= max) {
                 const offset = ((initialValue - min) / step) * stepSize - (knobSize / 2);
                 setValueStatic(offset, knobSize, stepSize);
@@ -83,6 +89,7 @@ export const Slider = ({
             }).start();
         }
     }, [min, max, step, initialValue, sliderWidth]);
+    
     useEffect(() => {
         const size = typeof styleSize === 'number' ? styleSize : styleSize === 'small' ? SMALL_SIZE : styleSize === 'medium' ? MEDIUM_SIZE : LARGE_SIZE;
         setknobSize(size);
@@ -93,7 +100,8 @@ export const Slider = ({
         newOffset = Math.round((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
         settingValue(newOffset);
         setValueOffset(newOffset);
-        valueOnChange(Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min);
+        const changeTo = Math.round(((newOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+        valueOnChange(decimalRound(changeTo));
     }
     const settingValue = (newOffset: number) => {
         translateX.setValue(newOffset);
@@ -101,7 +109,8 @@ export const Slider = ({
     }
     const setValueText = (totalOffset: number) => {
         const numericValue: number = Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-        valueTextRef.current?.setNativeProps({ text: numericValue.toString() });
+        const text = decimals > 0 ? numericValue.toFixed(decimals) : numericValue.toString();
+        valueTextRef.current?.setNativeProps({ text });
     }
     const setStepSize = (max: number, min: number, step: number) => {
         const numberOfSteps = ((max - min) / step);
@@ -155,8 +164,10 @@ export const Slider = ({
     }
     // ------------------------------------------------------------------------------------------------
 
+    const padding = useMemo(() => styleSize === 'large' ? 17 : styleSize === 'medium' ? 24 : 31, [styleSize]);
+
     return (
-        <Animated.View style={[styles.container, { opacity, padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
+      <Animated.View style={[styles.container, { opacity, padding }, customContainerStyle]}>
             {
                 showValueLabels &&
                 <View style={{ width: '100%', height: 1, flexDirection }}>
@@ -187,12 +198,12 @@ export const Slider = ({
                 showRangeLabels &&
                 <View style={{ width: '100%', flexDirection, justifyContent: 'space-between' }}>
                     <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize, marginLeft: -7 }}>{min}</Text>
-                    <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{max}</Text>
+                    <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize, marginRight: 7 }}>{max}</Text>
                 </View>
             }
         </Animated.View>
     );
-}
+}));
 
 const styles = StyleSheet.create({
     container: {
