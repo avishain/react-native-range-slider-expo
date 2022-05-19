@@ -26,6 +26,7 @@ interface SliderProps {
     showValueLabels?: boolean,
     initialValue?: number,
     containerStyle?: ViewStyle,
+    formatterFunction?: (value: number) => string,
 }
 
 export const Slider = gestureHandlerRootHOC(memo(({
@@ -42,6 +43,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     showValueLabels = true,
     initialValue,
     containerStyle: customContainerStyle = {},
+    formatterFunction,
 }: SliderProps) => {
 
     // settings
@@ -67,6 +69,10 @@ export const Slider = gestureHandlerRootHOC(memo(({
 
   const {decimals, decimalRound} = useUtils({step});
 
+  const formatLabel = (value: number) => {
+    return formatterFunction == undefined ? value.toFixed(decimals) : formatterFunction(value)
+  };
+
     // initalizing settings
     useEffect(() => {
         setFlexDirection(osRtl ? 'row-reverse' : 'row');
@@ -76,7 +82,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     useEffect(() => {
         if (sliderWidth > 0) {
             const stepSize = setStepSize(max, min, step);
-            valueTextRef.current?.setNativeProps({ text: decimals > 0 ? min.toFixed(decimals) : min.toString() });
+            valueTextRef.current?.setNativeProps({ text: decimals > 0 ? formatLabel(min) : formatLabel(min) });
             if (typeof initialValue === 'number' && initialValue >= min && initialValue <= max) {
                 const offset = ((initialValue - min) / step) * stepSize - (knobSize / 2);
                 setValueStatic(offset, knobSize, stepSize);
@@ -109,7 +115,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     }
     const setValueText = (totalOffset: number) => {
         const numericValue: number = Math.floor(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-        const text = decimals > 0 ? numericValue.toFixed(decimals) : numericValue.toString();
+        const text = formatLabel(numericValue);
         valueTextRef.current?.setNativeProps({ text });
     }
     const setStepSize = (max: number, min: number, step: number) => {
@@ -125,7 +131,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
         if (totalOffset >= - knobSize / 2 && totalOffset <= sliderWidth - knobSize / 2) {
             translateX.setValue(totalOffset);
             if (valueTextRef != null) {
-                valueTextRef.current?.setNativeProps({ text: (Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min).toString() });
+                valueTextRef.current?.setNativeProps({ text: formatLabel(Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min) });
             }
             inRangeScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth + 0.01);
         }
