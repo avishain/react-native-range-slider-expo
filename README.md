@@ -69,13 +69,16 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | toKnobColor | string (color) | no | '#00a2ff' |
 | inRangeBarColor | string (color) | no | 'rgb(100,100,100)' |
 | outOfRangeBarColor | string (color) | no | 'rgb(200,200,200)' |
-| valueLabelsTextColor | string (color) | no | 'white' |
 | valueLabelsBackgroundColor | string (color) | no | '#3a4766' |
 | rangeLabelsTextColor | string (color) | no | 'rgb(60,60,60)' |
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
 | initialFromValue | number | no | as 'min' value |
 | initialToValue | number | no | as 'max' value |
+| knobSize | number | no | 24/34/44 | 
+| containerStyle | style | no | - |
+| barHeight | number | no | 8/11/15 | 
+| labelFormatter | (value: number) => string | no | - |
 
 <br/>
 
@@ -96,6 +99,9 @@ import RangeSlider, { Slider } from 'react-native-range-slider-expo';
 | showRangeLabels | boolean | no | true |
 | showValueLabels | boolean | no | true |
 | initialValue | number | no | as 'min' value |
+| containerStyle | style | no | - |
+| barHeight | number | no | 8/11/15 | 
+| labelFormatter | (value: number) => string | no | - |
 
 <br/>
 
