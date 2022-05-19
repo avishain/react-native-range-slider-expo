@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Animated, ColorValue, StyleSheet, TextInput, TextStyle } from 'react-native';
+import { Animated, StyleSheet, TextInput, TextStyle } from 'react-native';
 import Svg, { Color, Path } from 'react-native-svg';
 import { osRtl } from './utils';
 
