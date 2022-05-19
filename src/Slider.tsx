@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager, ViewStyle } from 'react-native';
-import { gestureHandlerRootHOC, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager, ViewStyle, TextStyle } from 'react-native';
+import { gestureHandlerRootHOC, GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import useUtils from './components/utils';
 import Svg, { Path } from 'react-native-svg';
 
@@ -26,24 +26,25 @@ interface SliderProps {
     showValueLabels?: boolean,
     initialValue?: number,
     containerStyle?: ViewStyle,
-    formatterFunction?: (value: number) => string,
-}
+    knobBubbleTextStyle?: TextStyle,
+    labelFormatter?: (value: number) => string,
+  }
 
-export const Slider = gestureHandlerRootHOC(memo(({
+export const Slider = gestureHandlerRootHOC(({
     min, max, valueOnChange,
     step = 1,
     styleSize = 'medium',
     knobColor = '#00a2ff',
     inRangeBarColor = 'rgb(200,200,200)',
     outOfRangeBarColor = 'rgb(100,100,100)',
-    valueLabelsTextColor = 'white',
+    knobBubbleTextStyle = {},
     valueLabelsBackgroundColor = '#3a4766',
     rangeLabelsTextColor = 'rgb(60,60,60)',
     showRangeLabels = true,
     showValueLabels = true,
     initialValue,
     containerStyle: customContainerStyle = {},
-    formatterFunction,
+    labelFormatter,
 }: SliderProps) => {
 
     // settings
@@ -67,11 +68,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     const valueTextRef = React.createRef<TextInput>();
     const opacity = React.useRef<Animated.Value>(new Animated.Value(0)).current;
 
-  const {decimals, decimalRound} = useUtils({step});
-
-  const formatLabel = (value: number) => {
-    return formatterFunction == undefined ? value.toFixed(decimals) : formatterFunction(value)
-  };
+  const {decimalRound, formatLabel} = useUtils({step, labelFormatter});
 
     // initalizing settings
     useEffect(() => {
@@ -82,7 +79,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     useEffect(() => {
         if (sliderWidth > 0) {
             const stepSize = setStepSize(max, min, step);
-            valueTextRef.current?.setNativeProps({ text: decimals > 0 ? formatLabel(min) : formatLabel(min) });
+            valueTextRef.current?.setNativeProps({ text: formatLabel(min) });
             if (typeof initialValue === 'number' && initialValue >= min && initialValue <= max) {
                 const offset = ((initialValue - min) / step) * stepSize - (knobSize / 2);
                 setValueStatic(offset, knobSize, stepSize);
@@ -131,7 +128,8 @@ export const Slider = gestureHandlerRootHOC(memo(({
         if (totalOffset >= - knobSize / 2 && totalOffset <= sliderWidth - knobSize / 2) {
             translateX.setValue(totalOffset);
             if (valueTextRef != null) {
-                valueTextRef.current?.setNativeProps({ text: formatLabel(Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min) });
+              const labelValue = Math.round(((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
+              valueTextRef.current?.setNativeProps({ text: formatLabel(labelValue) });
             }
             inRangeScaleX.setValue((totalOffset + (knobSize / 2)) / sliderWidth + 0.01);
         }
@@ -173,6 +171,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
     const padding = useMemo(() => styleSize === 'large' ? 17 : styleSize === 'medium' ? 24 : 31, [styleSize]);
 
     return (
+    <GestureHandlerRootView>
       <Animated.View style={[styles.container, { opacity, padding }, customContainerStyle]}>
             {
                 showValueLabels &&
@@ -188,7 +187,7 @@ export const Slider = gestureHandlerRootHOC(memo(({
                                 stroke={valueLabelsBackgroundColor}
                             />
                         </Svg>
-                        <TextInput style={{ position: 'absolute', width: 40, textAlign: 'center', ...svgOffset, color: valueLabelsTextColor, bottom: 25, fontWeight: 'bold' }} ref={valueTextRef} />
+                        <TextInput style={[styles.knobBubbleText, svgOffset, knobBubbleTextStyle]} ref={valueTextRef} />
                     </Animated.View>
                 </View>
             }
@@ -208,8 +207,9 @@ export const Slider = gestureHandlerRootHOC(memo(({
                 </View>
             }
         </Animated.View>
+    </GestureHandlerRootView>
     );
-}));
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -224,5 +224,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         borderBottomRightRadius: 100,
         borderTopRightRadius: 100
-    }
+    },
+    knobBubbleText: { 
+      position: 'absolute', 
+      width: 40, 
+      textAlign: 'center',  
+      bottom: 25, 
+      fontWeight: 'bold',
+      color: 'white'
+  },
 });

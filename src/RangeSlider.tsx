@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, ViewStyle } from 'react-native';
-import { gestureHandlerRootHOC, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, ViewStyle, TextStyle } from 'react-native';
+import { gestureHandlerRootHOC, GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 import KnobBubble from './components/KnobBubble';
 import useUtils, { osRtl } from './components/utils';
 
@@ -20,7 +20,7 @@ interface SliderProps {
   toKnobColor?: string,
   inRangeBarColor?: string,
   outOfRangeBarColor?: string,
-  valueLabelsTextColor?: string,
+  knobBubbleTextStyle?: TextStyle,
   valueLabelsBackgroundColor?: string,
   rangeLabelsTextColor?: string,
   showRangeLabels?: boolean,
@@ -30,6 +30,7 @@ interface SliderProps {
   knobSize?: number,
   containerStyle?: ViewStyle,
   barHeight?: number,
+  labelFormatter?: (value: number) => string,
 }
 
 const RangeSlider = memo(({
@@ -40,7 +41,6 @@ const RangeSlider = memo(({
   toKnobColor = '#00a2ff',
   inRangeBarColor = 'rgb(100,100,100)',
   outOfRangeBarColor = 'rgb(200,200,200)',
-  valueLabelsTextColor = 'white',
   valueLabelsBackgroundColor = '#3a4766',
   rangeLabelsTextColor = 'rgb(60,60,60)',
   showRangeLabels = true,
@@ -48,8 +48,10 @@ const RangeSlider = memo(({
   initialFromValue,
   initialToValue,
   knobSize: _knobSize,
+  knobBubbleTextStyle = {},
   containerStyle: customContainerStyle = {},
   barHeight: customBarHeight,
+  labelFormatter,
 }: SliderProps) => {
   
   // settings
@@ -79,7 +81,7 @@ const RangeSlider = memo(({
   const toValueTextRef = React.createRef<TextInput>();
   const fromValueTextRef = React.createRef<TextInput>();
   const opacity = React.useRef<Animated.Value>(new Animated.Value(0)).current;
-  const {decimals, decimalRound} = useUtils({step});
+  const {formatLabel, decimalRound} = useUtils({step, labelFormatter});
 
   // initalizing settings
   useEffect(() => {
@@ -89,8 +91,8 @@ const RangeSlider = memo(({
   useEffect(() => {
     if (wasInitialized) {
       const stepSize = setStepSize(max, min, step);
-      fromValueTextRef.current?.setNativeProps({ text: decimals > 0 ? min.toFixed(decimals) : min.toString() });
-      toValueTextRef.current?.setNativeProps({ text: decimals > 0 ? max.toFixed(decimals) : max.toString() });
+      fromValueTextRef.current?.setNativeProps({ text: formatLabel(min) });
+      toValueTextRef.current?.setNativeProps({ text: formatLabel(min) });
       if (typeof initialFromValue === 'number' && initialFromValue >= min && initialFromValue <= max) {
         const offset = ((initialFromValue - min) / step) * stepSize - (knobSize / 2);
         setFromValueStatic(offset, knobSize, stepSize);
@@ -116,7 +118,7 @@ const RangeSlider = memo(({
     setBarHeight(customBarHeight ?? sizeBasedOnStyleSize / 3)
     translateXfromValue.setValue(-size / 4);
   }, [styleSize, customBarHeight]);
-
+  
   // initalizing settings helpers
   const setFromValueStatic = (newOffset: number, knobSize: number, stepInPixels: number) => {
     newOffset = Math.floor((newOffset + (knobSize / 2)) / stepInPixels) * stepInPixels - (knobSize / 2);
@@ -151,7 +153,7 @@ const RangeSlider = memo(({
     const isTo = !from && toValueTextRef != null;
     if (isFrom || isTo) {
       const numericValue: number = Math[isFrom ? 'floor' : 'ceil'](((totalOffset + (knobSize / 2)) * (max - min) / sliderWidth) / step) * step + min;
-      const text = decimals > 0 ? numericValue.toFixed(decimals) : numericValue.toString();
+      const text = formatLabel(numericValue);
       (isFrom ? fromValueTextRef : toValueTextRef).current?.setNativeProps({ text });
     }
   }
@@ -244,43 +246,47 @@ const RangeSlider = memo(({
   const padding = useMemo(() => styleSize === 'large' ? 17 : styleSize === 'medium' ? 24 : 31, [styleSize]);
 
   return (
-    <Animated.View style={[styles.container, { opacity, padding }, customContainerStyle]}>
-      {
-        showValueLabels &&
-        <View style={{ width: '100%', height: 1, flexDirection }}>
-          <KnobBubble {...{ knobSize, valueLabelsBackgroundColor, valueLabelsTextColor }}
-            translateX={translateXfromValue}
-            scale={fromValueScale}
-            textInputRef={fromValueTextRef}
-          />
-          <KnobBubble {...{ knobSize, valueLabelsBackgroundColor, valueLabelsTextColor }}
-            translateX={translateXtoValue}
-            scale={toValueScale}
-            textInputRef={toValueTextRef}
-          />
+    <GestureHandlerRootView>
+      <Animated.View style={[styles.container, { opacity, padding }, customContainerStyle]}>
+        {
+          showValueLabels &&
+          <View style={{ width: '100%', height: 1, flexDirection }}>
+            <KnobBubble {...{ knobSize, valueLabelsBackgroundColor }}
+              translateX={translateXfromValue}
+              scale={fromValueScale}
+              textInputRef={fromValueTextRef}
+              textStyle={knobBubbleTextStyle}
+            />
+            <KnobBubble {...{ knobSize, valueLabelsBackgroundColor }}
+              translateX={translateXtoValue}
+              scale={toValueScale}
+              textInputRef={toValueTextRef}
+              textStyle={knobBubbleTextStyle}
+            />
+          </View>
+        }
+        <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection, alignItems: 'center' }}>
+          <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight }} onLayout={onLayout} />
+          <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
+          <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
+          <Animated.View style={{ width: sliderWidth, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
+          <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
+          <PanGestureHandler onGestureEvent={onGestureEventFromValue} onHandlerStateChange={onHandlerStateChangeFromValue}>
+            <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: fromKnobColor, elevation: fromElevation, transform: [{ translateX: translateXfromValue }] }]} />
+          </PanGestureHandler>
+          <PanGestureHandler onGestureEvent={onGestureEventToValue} onHandlerStateChange={onHandlerStateChangeToValue}>
+            <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: toKnobColor, elevation: toElevation, transform: [{ translateX: translateXtoValue }] }]} />
+          </PanGestureHandler>
         </View>
-      }
-      <View style={{ width: '100%', height: knobSize, marginVertical: 4, position: 'relative', flexDirection, alignItems: 'center' }}>
-        <View style={{ position: 'absolute', backgroundColor: inRangeBarColor, left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight }} onLayout={onLayout} />
-        <Animated.View style={{ position: 'absolute', left: knobSize / 4, marginLeft: -knobSize / 4, right: knobSize / 4, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: sliderWidth / 2 }, { scaleX: rightBarScaleX }, { translateX: -sliderWidth / 2 }] }} />
-        <Animated.View style={{ position: 'absolute', left: -knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
-        <Animated.View style={{ width: sliderWidth, height: barHeight, backgroundColor: outOfRangeBarColor, transform: [{ translateX: -sliderWidth / 2 }, { scaleX: leftBarScaleX }, { translateX: sliderWidth / 2 }] }} />
-        <Animated.View style={{ position: 'absolute', left: sliderWidth - knobSize / 4, width: knobSize / 2, height: barHeight, borderRadius: barHeight, backgroundColor: outOfRangeBarColor }} />
-        <PanGestureHandler onGestureEvent={onGestureEventFromValue} onHandlerStateChange={onHandlerStateChangeFromValue}>
-          <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: fromKnobColor, elevation: fromElevation, transform: [{ translateX: translateXfromValue }] }]} />
-        </PanGestureHandler>
-        <PanGestureHandler onGestureEvent={onGestureEventToValue} onHandlerStateChange={onHandlerStateChangeToValue}>
-          <Animated.View style={[styles.knob, { height: knobSize, width: knobSize, borderRadius: knobSize, backgroundColor: toKnobColor, elevation: toElevation, transform: [{ translateX: translateXtoValue }] }]} />
-        </PanGestureHandler>
-      </View>
-      {
-        showRangeLabels &&
-        <View style={{ width: '100%', flexDirection, justifyContent: 'space-between' }}>
-          <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{min}</Text>
-          <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{max}</Text>
-        </View>
-      }
-    </Animated.View>
+        {
+          showRangeLabels &&
+          <View style={{ width: '100%', flexDirection, justifyContent: 'space-between' }}>
+            <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{min}</Text>
+            <Text style={{ color: rangeLabelsTextColor, fontWeight: "bold", fontSize }}>{max}</Text>
+          </View>
+        }
+      </Animated.View>
+    </GestureHandlerRootView>
   );
 })
 

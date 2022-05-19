@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Animated, StyleSheet, View, LayoutChangeEvent, Text, TextInput, I18nManager, TextStyle, StyleProp } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import { gestureHandlerRootHOC, GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 
 const osRtl = I18nManager.isRTL;
 
@@ -30,7 +30,7 @@ interface TextualSliderProps {
     initialValue?: number;
 }
 
-const TextualSlider = ({
+const TextualSlider = gestureHandlerRootHOC(({
     values, valueOnChange,
     styleSize = 'medium',
     knobColor = '#00a2ff',
@@ -167,6 +167,7 @@ const TextualSlider = ({
         outputRange: [0, 1]
     })
     return (
+    <GestureHandlerRootView>
         <Animated.View style={[styles.container, { opacity, padding: styleSize === 'large' ? 7 : styleSize === 'medium' ? 14 : 21 }]}>
             {
                 showValueLabels &&
@@ -196,8 +197,9 @@ const TextualSlider = ({
                 </View>
             }
         </Animated.View>
+    </GestureHandlerRootView>
     );
-}
+});
 
 const styles = StyleSheet.create({
     container: {

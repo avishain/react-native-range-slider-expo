@@ -5,10 +5,11 @@ export const osRtl = I18nManager.isRTL;
 
 interface UtilsParams {
   step: number;
+  labelFormatter: ((value: number) => string) | undefined
 }
 
 const useUtils = (params: UtilsParams) => {
-  const {step} = params;
+  const {step, labelFormatter} = params;
 
   const countDecimals = useCallback((num: number) => {
     if (Math.floor(num.valueOf()) === num.valueOf()) return 0;
@@ -22,7 +23,11 @@ const useUtils = (params: UtilsParams) => {
     return Math.round(num * m) / m;
   }
 
-  return {decimals, decimalRound}
+  const formatLabel = (value: number) => {
+    return labelFormatter?.(value) ?? value.toFixed(decimals);
+  };
+
+  return {formatLabel,  decimalRound};
 }
 
 export default useUtils;
