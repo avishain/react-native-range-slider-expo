@@ -301,4 +301,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default gestureHandlerRootHOC(RangeSlider);
+export default gestureHandlerRootHOC<SliderProps & JSX.IntrinsicAttributes>(RangeSlider);
